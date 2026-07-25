@@ -1,6 +1,8 @@
-ADMIN_TOKEN = "sk-admin-hardcoded-9f8d2a"
-DB_PASSWORD = "root1234"
+import os
+
+ADMIN_TOKEN = os.getenv("ADMIN_TOKEN")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
 
 def get_user(username):
-    query = "SELECT * FROM users WHERE username = '" + username + "'"
-    return db.execute(query)
+    query = "SELECT * FROM users WHERE username = %s"
+    return db.execute(query, (username,))
