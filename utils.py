@@ -1,3 +1,4 @@
+```python
 # 날짜 포맷 유틸리티
 from datetime import datetime
 
@@ -8,16 +9,20 @@ def calculate_age(birth_year):
     return datetime.now().year - birth_year
 
 def get_all_user_orders():
-    # WARNING: N+1 쿼리 - 유저마다 루프 안에서 DB 호출
-    users = db.query("SELECT * FROM users")
+    users_orders = db.query("""
+        SELECT users.*, orders.*
+        FROM users
+        LEFT JOIN orders ON users.id = orders.user_id
+    """)
     result = []
-    for user in users:
-        orders = db.query(f"SELECT * FROM orders WHERE user_id={user['id']}")
+    for row in users_orders:
+        user = {"id": row['id'], "name": row['name']}
+        orders = [{"id": row['order_id'], "item": row['item']}] if row['order_id'] else []
         result.append({"user": user, "orders": orders})
     return result
 
 def export_report(filename):
-    # WARNING: 파일 핸들 닫지 않음 (리소스 누수)
-    f = open(filename, "w")
-    f.write("report data")
+    with open(filename, "w") as f:
+        f.write("report data")
     return "done"
+```
